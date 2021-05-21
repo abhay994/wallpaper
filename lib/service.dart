@@ -4,8 +4,6 @@ import 'Key.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'allExport.dart';
-import 'dart:io';
-import 'dart:math';
 
 
 
@@ -23,10 +21,13 @@ class Service{
   InterstitialAd createInterstitialAd() {
     return InterstitialAd(
       adUnitId: 'ca-app-pub-4855672100917117/9408929779',
+     // adUnitId: InterstitialAd.testAdUnitId,
+      request: AdRequest(),
+      listener: AdListener(),
       //  targetingInfo: targetingInfo,
-      listener: (MobileAdEvent event) {
-        print("InterstitialAd event $event");
-      },
+      // listener: (MobileAdEvent event) {
+      //   print("InterstitialAd event $event");
+      // },
     );
   }
   Service({this.initialUrl}){
@@ -48,22 +49,18 @@ class Service{
   Stream<String> get wallpaperhdJson => Wallpaperhd.stream;
   Stream<String> get searchJson=> Search.stream;
 
-  void disposeService(){
-   WallpaperUrl.close();
-   _interstitialAd?.dispose();
-  }
 
 
 
   void initfetch( ) async {
   //  _interstitialAd = createInterstitialAd()..load();
 print('fetch');
-   httpReuest(name: "").then((value) {
+   httpReuest(query: "").then((value) {
      Popular.sink.add(value);
 
     });
 
-  httpReuest(name: "",order: "latest").then((value) {
+  httpReuest(query: "",order: "latest").then((value) {
      Wallpaperhd.sink.add(value);
 
 });
@@ -82,53 +79,64 @@ print('fetch');
 
 
 
- Future<String> httpReuest({String name,String order,String orientation,String colors,String category}) async{
-
-    var URL= 'https://pixabay.com/api/?key=${apiKey[random.nextInt(2)]}&q=${name}&image_type=photo&per_page=200&order=${order}&orientation=${orientation}&colors=${colors}&category=${category}&safesearch=true';
+ Future<String> httpReuest({String query,String order,String orientation,String colors,String category}) async{
+ //  random.nextInt(2)
+    var URL= 'https://pixabay.com/api/?key=${apiKey[random.nextInt(4)]}&q=$query&image_type=photo&per_page=200&order=$order&orientation=$orientation&colors=$colors&category=$category&safesearch=true';
     var response = await http.get(URL);
     if (response.statusCode == 200) {
      print(response.body);
-    return response.body;
+      return response.body;
 
-
-   } else {
+    } else {
    print('Request failed status: ${response.statusCode}.');
    }
 
   }
 
   Future<void> httpReuests({String query,String order,String orientation,String colors,String category}) async{
- print("inRequest");
-    //   Wallpaperhd = new BehaviorSubject<String>.seeded(this.initialUrl);
-    //Wallpaperhd.sink.add('[]');
-    var URL= 'https://pixabay.com/api/?key=${apiKey[random.nextInt(2)]}&q=${query}&image_type=photo&per_page=200&order=${order}&orientation=${orientation}&colors=${colors}&category=${category}&safesearch=true';
-    var response = await http.get(URL);
-    if (response.statusCode == 200) {
-      print(response.body);
 
-      Wallpaperhd.sink.add(response.body);
+    httpReuest(query: query,order: order,orientation: orientation,colors: colors,category: category).then((value) {
+      Wallpaperhd.sink.add(value);
 
-    } else {
-      print('Request failed status: ${response.statusCode}.');
-    }
+    });
+ // print("inRequest");
+ //    //   Wallpaperhd = new BehaviorSubject<String>.seeded(this.initialUrl);
+ //    //Wallpaperhd.sink.add('[]');
+ //    var URL= 'https://pixabay.com/api/?key=${apiKey[random.nextInt(3)]}&q=${query}&image_type=photo&per_page=200&order=${order}&orientation=${orientation}&colors=${colors}&category=${category}&safesearch=true';
+ //    var response = await http.get(URL);
+ //    if (response.statusCode == 200) {
+ //      print(response.body);
+ //
+ //      Wallpaperhd.sink.add(response.body);
+ //
+ //    } else {
+ //      print('Request failed status: ${response.statusCode}.');
+ //    }
 
   }
 
 
 
   Future<void> httpSearchReuests({String query,String order,String orientation,String colors,String category}) async{
-    print("inRequest");
-    //   Wallpaperhd = new BehaviorSubject<String>.seeded(this.initialUrl);
-    //Wallpaperhd.sink.add('[]');
-    var URL= 'https://pixabay.com/api/?key=${apiKey[random.nextInt(1)]}&q=${query}&image_type=photo&per_page=200&order=${order}&orientation=${orientation}&colors=${colors}&category=${category}&safesearch=true';
-    var response = await http.get(URL);
-    if (response.statusCode == 200) {
-      print(response.body);
-      Search.sink.add(response.body);
 
-    } else {
-      print('Request failed status: ${response.statusCode}.');
-    }
+    httpReuest(query: query,order: order,orientation: orientation,colors: colors,category: category).then((value) {
+      Search.sink.add(value);
+
+    });
+
+
+    // print("inRequest");
+    // //   Wallpaperhd = new BehaviorSubject<String>.seeded(this.initialUrl);
+    // //Wallpaperhd.sink.add('[]');
+    // var URL= 'https://pixabay.com/api/?key=${apiKey[random.nextInt(3)]}&q=${query}&image_type=photo&per_page=200&order=${order}&orientation=${orientation}&colors=${colors}&category=${category}&safesearch=true';
+    // var response = await http.get(URL);
+    // if (response.statusCode == 200) {
+    //   print(response.body);
+    //   Search.sink.add(response.body);
+    //
+    // } else {
+    //   print('Request failed status: ${response.statusCode}.');
+    // }
 
 
 
@@ -149,6 +157,14 @@ print('fetch');
   }
 
 
+  void disposeService(){
+    WallpaperUrl?.close();
+    Popular?.close();
+    Search?.close();
+    WallpaperUrl?.close();
+    Wallpaperhd?.close();
+    _interstitialAd?.dispose();
+  }
 
 }
 

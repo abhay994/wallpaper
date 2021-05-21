@@ -10,4 +10,4 @@ export 'package:wallpaper/dashboard/SearchDashBoard.dart';
 
 export 'package:transparent_image/transparent_image.dart';
 export 'package:wallpaper/dashboard/detail.dart';
-export 'package:firebase_admob/firebase_admob.dart';
+export 'package:google_mobile_ads/google_mobile_ads.dart';

@@ -7,6 +7,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:esys_flutter_share/esys_flutter_share.dart';
 import 'package:wallpaper/service.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+
+import 'package:wallpaper_manager/wallpaper_manager.dart';
+
 
 
 class Detail extends StatefulWidget {
@@ -196,15 +200,15 @@ Service _service = new Service();
 
   static const platform = const MethodChannel('wallpaper');
 
-  Future<void> _getWallpaper() async {
-    try {
-      final int result = await platform.invokeMethod(
-          'getWallpaper', {"text": filePath});
-       _onLoading(false,"Image is set as wallpaper...");
-    } on PlatformException catch (e) {
-      Navigator.pop(context);
-    }
-  }
+  // Future<void> _getWallpaper() async {
+  //   try {
+  //     final int result = await platform.invokeMethod(
+  //         'getWallpaper', {"text": filePath});
+  //      _onLoading(false,"Image is set as wallpaper...");
+  //   } on PlatformException catch (e) {
+  //     Navigator.pop(context);
+  //   }
+  // }
 
 
 //share
@@ -232,10 +236,18 @@ Service _service = new Service();
   void _onImageWallpapButtonPressed(String URL) async {
    _onLoading(true,"Preparing image for wallpaper...");
     print("_onImageSaveButtonPressed");
-    var response = await http.get(URL);
-    filePath = await ImagePickerSaver.saveFile(fileData: response.bodyBytes);
+   // var response = await http.get(URL);
+   // filePath = await ImagePickerSaver.saveFile(
+   //     fileData: Uint8List.fromList(response.bodyBytes));
+    print(filePath);
+   int location = WallpaperManager.HOME_SCREEN; // or location = WallpaperManager.LOCK_SCREEN;
+  // String result;
+   var file = await DefaultCacheManager().getSingleFile(URL);
+   final String results = await WallpaperManager.setWallpaperFromFile(file.path, location);
+   _onLoading(false,"Image is set as wallpaper...");
 
-    _getWallpaper();
+
+    //_getWallpaper();
   }
 
 

@@ -1,6 +1,10 @@
 
 import 'dart:convert' as convert;
 import '../allExport.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'package:launch_review/launch_review.dart';
 import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
 
@@ -19,19 +23,99 @@ class _MainDashboardState extends State<MainDashboard> with SingleTickerProvider
   String _colorName = "";
   String _catName = "";
 
+
   double screenWidth, screenHeight;
 
   List menuList ;
   List colorsList;
   List<Color> colors;
+ // BannerAd myBanner;
+AdWidget adWidget ;
+  int rate;
+  // List<Article> list;
+  Future<void> _neverSatisfied() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Rate This App'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Do you love this app ?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            FlatButton(
+              child: Text(
+                'Maybe Later',
+                style: TextStyle(color: Colors.black26),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            FlatButton(
+              child: Text('Rate Now'),
+              onPressed: () {
+                _assignRate();
+                Future.delayed(Duration(seconds: 1), () {
 
 
+                 // inAppReview.requestReview();
 
+                  LaunchReview.launch(
+                      androidAppId: "com.ar.free.wallpaper",
+                      iOSAppId: "585027354");
+                  Navigator.of(context).pop();
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+  _loadrate() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      rate = (prefs.getString('rate') ?? 0);
+    });
+  }
+
+  _assignRate() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    Future.delayed(const Duration(seconds: 2), () {
+      prefs.setInt('rate', 1);
+      rate = (prefs.getInt('rate'));
+      print(rate);
+    });
+  }
 
   @override
   void initState() {
 
+   // myBanner = BannerAd(
+   //    adUnitId: 'ca-app-pub-4855672100917117/8837313274',
+   //    size: AdSize.largeBanner,
+   //    request: AdRequest(),
+   //    listener: AdListener(),
+   //  );
+   //
+   // Future.delayed(const Duration(seconds: 1), () {
+   //   myBanner.load();
+   //   adWidget  = AdWidget(ad: myBanner);
+   // });
 
+    _loadrate();
+    Future.delayed(const Duration(seconds: 25), () {
+      if (rate == 0) {
+      _neverSatisfied();
+      }
+    });
 
     colorsList =["grey","red","orange","green","blue","white","black","brown","pink"];
     menuList = ["New","Backgrounds", "Fashion", "Nature", "Science", "Education", "Feelings", "Health", "People", "Religion", "Places", "Animals", "Industry", "Computer", "Food", "Sports", "Transportation", "Travel", "Buildings", "Business", "Music"];
@@ -105,11 +189,15 @@ class _MainDashboardState extends State<MainDashboard> with SingleTickerProvider
 
                               Align(
                                   alignment: Alignment.center,
-                                  child: PorfileName(title: "Wallpaper Search",size: screenHeight/20,color: Colors.white,)),
+                                  child: FittedBox(
+                                      fit: BoxFit.contain,
+                                      child: PorfileName(title: "Wallpaper Search",size: screenWidth*0.08,color: Colors.white,))),
                               SizedBox(
                                 height: screenHeight/35,
                               ),
-                              PorfileName(title: "Best Wallpaper For You",size: screenHeight/30,color: Colors.black,),
+                              FittedBox(
+                                  fit: BoxFit.contain,
+                                  child: PorfileName(title: "Best Wallpaper For You",size: screenWidth*0.05,color: Colors.black,)),
                               SizedBox(
                                 height: screenHeight/35,
                               ),
@@ -118,7 +206,9 @@ class _MainDashboardState extends State<MainDashboard> with SingleTickerProvider
                                 height: screenHeight/35,
                               ),
 
-                              PorfileName(title: "Popular",size: screenHeight/30,color: Colors.black,),
+                              FittedBox(
+                                  fit: BoxFit.contain,
+                                  child: PorfileName(title: "Popular",size: screenWidth*0.05,color: Colors.black,)),
                               SizedBox(
                                 height: screenHeight/35,
                               ),
@@ -133,7 +223,19 @@ class _MainDashboardState extends State<MainDashboard> with SingleTickerProvider
                           height: 20,
                         ),
                         menuLists(),
-                        colorPlate()
+                        colorPlate(),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        // Container(
+                        //   alignment: Alignment.center,
+                        //   child: adWidget,
+                        //   width: myBanner.size.width.toDouble(),
+                        //   height: myBanner.size.height.toDouble(),
+                        // ),
+                        SizedBox(
+                          height: 10,
+                        ),
 
 
                       ]),
@@ -156,10 +258,14 @@ class _MainDashboardState extends State<MainDashboard> with SingleTickerProvider
             print('yes');
 
            return CarouselSlider.builder(
+
+             itemCount: jsonResponse['hits'].length as int !=null ?jsonResponse['hits'].length as int:0 ,
+
+             options: CarouselOptions(
                height: MediaQuery
                    .of(context)
                    .size
-                   .height / 2,
+                   .height *0.4,
                aspectRatio: 16 / 9,
                viewportFraction: 0.8,
                initialPage: 50,
@@ -169,13 +275,12 @@ class _MainDashboardState extends State<MainDashboard> with SingleTickerProvider
                autoPlayInterval: Duration(seconds: 3),
                autoPlayAnimationDuration: Duration(seconds: 1),
                autoPlayCurve: Curves.fastOutSlowIn,
-               pauseAutoPlayOnTouch: Duration(seconds: 10),
+             //  pauseAutoPlayOnTouch: Duration(seconds: 10),
                enlargeCenterPage: true,
-               itemCount: jsonResponse['hits'].length as int,
-               itemBuilder: (BuildContext context, int index) =>
 
-
-                   GestureDetector(
+             ),
+             itemBuilder: (BuildContext context, int index, int realIndex) {
+               return GestureDetector(
                      onTap: () {
 
 
@@ -222,7 +327,80 @@ class _MainDashboardState extends State<MainDashboard> with SingleTickerProvider
                        ),
 
                      ),
-                   )
+                   );
+
+             },
+
+
+
+
+//                height: MediaQuery
+//                    .of(context)
+//                    .size
+//                    .height *0.4,
+//                aspectRatio: 16 / 9,
+//                viewportFraction: 0.8,
+//                initialPage: 50,
+//                enableInfiniteScroll: true,
+//                reverse: true,
+//                autoPlay: true,
+//                autoPlayInterval: Duration(seconds: 3),
+//                autoPlayAnimationDuration: Duration(seconds: 1),
+//                autoPlayCurve: Curves.fastOutSlowIn,
+//                pauseAutoPlayOnTouch: Duration(seconds: 10),
+//                enlargeCenterPage: true,
+//                itemCount: jsonResponse['hits'].length as int,
+//                itemBuilder: (BuildContext context, int index) =>
+//
+//
+//                    GestureDetector(
+//                      onTap: () {
+//
+//
+//                        Navigator.push(
+//                            context,
+//                            new MaterialPageRoute(
+//                                builder: (context) =>
+//                                new Detail(
+//                                    originalPic: jsonResponse['hits'][index]['largeImageURL'],
+//                                    pic: jsonResponse['hits'][index]['webformatURL'])));
+// //                                 Navigator.push(
+// //                                     context,
+// //                                     new MaterialPageRoute(
+// //                                         builder: (context) =>
+// //                                         new PictureView(
+// //                                             originalPic: jsonResponse['hits'][index]['largeImageURL'],
+// //                                             pic: jsonResponse['hits'][index]['webformatURL'])));
+//                      },
+//                      child: Neumorphic(
+//                        margin: EdgeInsets.all(5),
+//                        drawSurfaceAboveChild: true,
+//                        style: NeumorphicStyle(
+//
+//                          shape: NeumorphicShape.convex,
+//                          intensity: 1,
+//                          depth: -15,
+//                          lightSource: LightSource.topLeft,
+//
+//
+//                        ),
+//                        boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(15)),
+//
+//                        child: Neumorphic(
+//
+//                            margin: EdgeInsets.all(1),
+//                            boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(15)),
+//                            child: Image.network(
+//                              jsonResponse['hits'][index]['webformatURL'],
+//                              fit: BoxFit.cover,
+//                              width: double.infinity,
+//                              height: double.infinity,
+//                            )
+//
+//                        ),
+//
+//                      ),
+//                    )
 
 
            );
@@ -308,8 +486,8 @@ class _MainDashboardState extends State<MainDashboard> with SingleTickerProvider
                           child: Image.network(
                             jsonResponse['hits'][index]['webformatURL'],
                             fit: BoxFit.cover,
-                            width: double.infinity,
-                            height: double.infinity,
+                            // width: double.infinity,
+                            // height: double.infinity,
                           )
 
                       ),
@@ -361,7 +539,7 @@ class _MainDashboardState extends State<MainDashboard> with SingleTickerProvider
               child: NeumorphicButton(
                   onClick: (){
                     cnt++;
-                    print("click ${cnt}");
+                    print("click $cnt");
                     if(cnt%2==0) {
                       print("click addd");
                       _service.showAdmob();
@@ -432,7 +610,7 @@ class _MainDashboardState extends State<MainDashboard> with SingleTickerProvider
 
                 onClick: (){
                   cnt++;
-                  if(cnt%2==0) {
+                  if(cnt%4==0) {
                     print("click addd");
                     _service.showAdmob();
 

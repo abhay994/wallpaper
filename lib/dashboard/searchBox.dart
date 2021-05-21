@@ -25,7 +25,7 @@ class _SearchBoxState extends State<SearchBox> {
       child: Container(
 
         width: screenWidth,
-        height: screenHeight/11,
+        height: screenHeight*0.07,
         child: Row(
           children: <Widget>[
             Expanded(

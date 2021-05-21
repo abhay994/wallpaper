@@ -7,4 +7,4 @@
  -keep class io.flutter.plugins.** { *; }  
  -keep class com.google.firebase.** { *; }  
  -dontwarn io.flutter.embedding.**  
- -ignorewarnings  
+ -ignorewarnings

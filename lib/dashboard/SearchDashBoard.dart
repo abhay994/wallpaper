@@ -21,6 +21,7 @@ class _SearchDashboardState extends State<SearchDashboard> {
   List<Color> colors;
   @override
   void initState() {
+
     _service.showAdmob();
     setState(() {
       flag=false;
@@ -94,7 +95,9 @@ class _SearchDashboardState extends State<SearchDashboard> {
                                   SizedBox(
                                     width:screenHeight/20,
                                   ),
-                                  PorfileName(title: "Wallpaper Search",size:screenWidth/12,color: Colors.white,)
+                                  FittedBox(
+                                    fit: BoxFit.contain,
+                                      child: PorfileName(title: "Wallpaper Search",size:screenWidth*0.07,color: Colors.white,))
 
                                 ],
 
@@ -150,7 +153,7 @@ class _SearchDashboardState extends State<SearchDashboard> {
                   return GestureDetector(
                     onTap: () {
                       cnts++;
-                      if(cnts%2==0) {
+                      if(cnts%4==0) {
                         print("click addd");
                         _service.showAdmob();
 

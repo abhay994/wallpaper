@@ -11,7 +11,7 @@ description: A new Flutter application.
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+8
+version: 1.0.0+17
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -24,26 +24,34 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
   http:
-  carousel_slider: ^1.4.1
+  carousel_slider: ^3.0.0
   transparent_image: ^1.0.0
   esys_flutter_share: ^1.0.2
   image_picker_saver: ^0.3.0
+  responsive_framework:
+  shared_preferences:
+  launch_review: ^2.0.0
+  image_gallery_saver:
+
   rxdart: ^0.23.1
   permission_handler: '^4.4.0+hotfix.2'
-#  flutter_launcher_icons: "^0.7.3"
+#  flutter_launcher_icons: "^0.8.0"
   flutter_neumorphic: ^1.0.7
-  firebase_admob: ^0.9.3+2
-
-#flutter_icons:
-#  android: "launcher_icon"
-#  ios: true
-#  image_path: "assets/multimedia.png"
+  google_mobile_ads: ^0.11.0+3
+  firebase_core: "0.7.0"
+  firebase_analytics: "^7.0.1"
+  wallpaper_manager:
+  flutter_cache_manager:
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+#flutter_icons:
+#  android: "launcher_icon"
+#  ios: false
+#  image_path: "assets/icon.png"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
